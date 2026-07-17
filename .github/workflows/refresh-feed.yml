@@ -1,0 +1,54 @@
+name: Refresh Tolstoy product feed
+
+on:
+  schedule:
+    # Daily at 06:00 UTC (~2:00 AM Eastern)
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: deploy-tolstoy-feed
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate Tolstoy CSV
+        run: npm run generate
+        env:
+          PUBLISH_TARGET: github
+          OUTPUT_PATH: public/tolstoy-products.csv
+          ONLY_VISIBLE_PRODUCTS: true
+          BIGCOMMERCE_STORE_HASH: ${{ secrets.BIGCOMMERCE_STORE_HASH }}
+          BIGCOMMERCE_ACCESS_TOKEN: ${{ secrets.BIGCOMMERCE_ACCESS_TOKEN }}
+          STORE_URL: ${{ secrets.STORE_URL }}
+          CURRENCY_CODE: ${{ secrets.CURRENCY_CODE }}
+          CURRENCY_SYMBOL: ${{ secrets.CURRENCY_SYMBOL }}
+          GITHUB_PUBLIC_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/tolstoy-products.csv
+
+      - name: Deploy CSV to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: false
+          commit_message: "chore: refresh Tolstoy product feed"
+
+      - name: Feed URL for Tolstoy
+        run: |
+          echo "Add this URL in Tolstoy settings:"
+          echo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/tolstoy-products.csv"

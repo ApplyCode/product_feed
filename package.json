@@ -1,0 +1,21 @@
+{
+  "name": "bigcommerce-tolstoy-feed",
+  "version": "1.0.0",
+  "description": "Sync BigCommerce catalog to Tolstoy CSV at a public URL",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "generate": "node src/index.js generate",
+    "schedule": "node src/index.js schedule",
+    "serve": "node src/index.js serve",
+    "verify-csv": "node scripts/verify-csv-format.js",
+    "test:description": "node scripts/test-description-plain-text.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.750.0",
+    "dotenv": "^16.4.7"
+  }
+}
