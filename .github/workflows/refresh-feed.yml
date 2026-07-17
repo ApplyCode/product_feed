@@ -22,8 +22,28 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
+
+      - name: Validate required secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.BIGCOMMERCE_STORE_HASH }}" ]; then
+            echo "::error::Missing repository secret: BIGCOMMERCE_STORE_HASH"
+            missing=1
+          fi
+          if [ -z "${{ secrets.BIGCOMMERCE_ACCESS_TOKEN }}" ]; then
+            echo "::error::Missing repository secret: BIGCOMMERCE_ACCESS_TOKEN"
+            missing=1
+          fi
+          if [ -z "${{ secrets.STORE_URL }}" ]; then
+            echo "::error::Missing repository secret: STORE_URL"
+            missing=1
+          fi
+          if [ "$missing" -eq 1 ]; then
+            echo "Add secrets under Settings → Secrets and variables → Actions"
+            exit 1
+          fi
 
       - run: npm ci
 

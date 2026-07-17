@@ -109,6 +109,19 @@ Runs an immediate sync, then every 24 hours. Pair with `npm run serve` behind ng
 
 In Tolstoy settings, add your **public CSV URL** (not a local file path). Tolstoy validates required columns: `id`, `title`, `url`, `imageUrl`, `price`.
 
+## Troubleshooting GitHub Actions
+
+**Node.js 20 deprecated warning** — harmless if the job succeeds. The workflow uses Node **22**; push the latest workflow file if you still see Node 20.
+
+**`Process completed with exit code 1`** — open the failed run and expand the step that failed:
+
+| Failed step | Likely cause |
+|-------------|----------------|
+| **Validate required secrets** | A secret is missing. Add `BIGCOMMERCE_STORE_HASH`, `BIGCOMMERCE_ACCESS_TOKEN`, and `STORE_URL` under Settings → Secrets and variables → Actions. Names must match exactly. |
+| **Generate Tolstoy CSV** | BigCommerce API error (wrong token/store hash) or invalid `STORE_URL`. Read the red error line in the log. |
+| **npm ci** | `package-lock.json` not pushed to GitHub. Commit and push it. |
+| **Deploy CSV to GitHub Pages** | Repo permissions — ensure Actions can write to `gh-pages` (workflow already sets `contents: write`). |
+
 ## Notes
 
 - Products without an image or price are skipped (Tolstoy would reject them).

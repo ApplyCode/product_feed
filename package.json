@@ -12,7 +12,7 @@
     "test:description": "node scripts/test-description-plain-text.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",

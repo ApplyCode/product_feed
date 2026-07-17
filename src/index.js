@@ -10,8 +10,10 @@ async function runGenerate() {
   try {
     await generateAndPublish();
   } catch (err) {
+    console.error("Feed generation failed:");
     console.error(err.message || err);
-    process.exitCode = 1;
+    if (err.stack) console.error(err.stack);
+    process.exit(1);
   }
 }
 
